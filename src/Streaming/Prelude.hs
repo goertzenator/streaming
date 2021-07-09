@@ -2062,11 +2062,11 @@ takeWhileM thePred = loop where
 
 {-| Convert an effectful @Stream (Of a)@ into a list of @as@
 
-    Note: Needless to say, this function does not stream properly.
-    It is basically the same as Prelude 'mapM' which, like 'replicateM',
-    'sequence' and similar operations on traversable containers
-    is a leading cause of space leaks.
-
+    Note: This function breaks streaming because the list is fully computed
+    into memory before it can be consumed.  In other words, the list does not
+    get consumed lazily and could occupy a lot of memory if the stream was
+    large. This is the same problem faced by Prelude 'mapM' and similar
+    functions.
 -}
 toList_ :: Monad m => Stream (Of a) m r -> m [a]
 toList_ = fold_ (\diff a ls -> diff (a: ls)) id (\diff -> diff [])
